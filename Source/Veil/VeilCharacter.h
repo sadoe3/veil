@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "VeilCharacter.generated.h"
 
+class UAbilitySystemComponent;
+class UVeilAttributeSet;
+
 UCLASS(Blueprintable)
 class AVeilCharacter : public ACharacter
 {
@@ -30,5 +33,13 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+	
+	
+	// ASC 활성화
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UVeilAttributeSet> AttributeSet;
 };
 

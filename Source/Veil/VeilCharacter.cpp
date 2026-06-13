@@ -11,8 +11,17 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
+#include "AbilitySystemComponent.h"
+#include "VeilAttributeSet.h"
+
 AVeilCharacter::AVeilCharacter()
 {
+	// ASC 및 AS 초기화
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AttributeSet = CreateDefaultSubobject<UVeilAttributeSet>("AttributeSet");
+	
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
