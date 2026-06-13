@@ -12,7 +12,10 @@
 #include "Engine/World.h"
 
 #include "AbilitySystemComponent.h"
-#include "VeilAttributeSet.h"
+#include "AbilitySystem/VeilAttributeSet.h"
+
+#include "UI/HUD/VeilHUD.h"
+#include "GameFramework/PlayerController.h"
 
 AVeilCharacter::AVeilCharacter()
 {
@@ -52,6 +55,23 @@ AVeilCharacter::AVeilCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+}
+
+void AVeilCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// 멀티플레이 환경이면 InitAbilityActorInfo 이후나 PossessedBy에서 처리하는 것이 정석이나, 지금은 빠른 프로토타이핑을 위해 BeginPlay에서 바로 연동하기
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (AVeilHUD* VeilHUD = Cast<AVeilHUD>(PlayerController->GetHUD()))
+		{
+			// 현재 PlayerState를 구현하지 않았으므로 PS 자리에는 nullptr를 넣고 진행
+			VeilHUD->InitOverlay(PlayerController, nullptr, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }
 
 void AVeilCharacter::Tick(float DeltaSeconds)

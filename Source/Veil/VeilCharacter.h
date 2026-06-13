@@ -17,6 +17,8 @@ class AVeilCharacter : public ACharacter
 public:
 	AVeilCharacter();
 
+	void BeginPlay() override;
+	
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
