@@ -57,24 +57,31 @@ AVeilCharacter::AVeilCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-void AVeilCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	// 멀티플레이 환경이면 InitAbilityActorInfo 이후나 PossessedBy에서 처리하는 것이 정석이나, 지금은 빠른 프로토타이핑을 위해 BeginPlay에서 바로 연동하기
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		if (AVeilHUD* VeilHUD = Cast<AVeilHUD>(PlayerController->GetHUD()))
-		{
-			// 현재 PlayerState를 구현하지 않았으므로 PS 자리에는 nullptr를 넣고 진행
-			VeilHUD->InitOverlay(PlayerController, nullptr, AbilitySystemComponent, AttributeSet);
-		}
-	}
-}
-
 void AVeilCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
+}
+
+
+void AVeilCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+    
+	// 서버(혹은 싱글플레이) 환경 초기화
+	InitAbilityActorInfo();
+}
+
+void AVeilCharacter::InitAbilityActorInfo()
+{
+	// 1. GAS Actor Info 초기화
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+    
+	// 2. 컨트롤러 및 HUD 캐스팅 후 UI(Overlay) 초기화
+	if (APlayerController* VeilPlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (AVeilHUD* VeilHUD = Cast<AVeilHUD>(VeilPlayerController->GetHUD()))
+		{
+			VeilHUD->InitOverlay(VeilPlayerController, nullptr, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }

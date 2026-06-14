@@ -17,7 +17,7 @@ class AVeilCharacter : public ACharacter
 public:
 	AVeilCharacter();
 
-	void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 	
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
@@ -36,12 +36,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 	
-	
 	// ASC 활성화
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
 	TObjectPtr<UVeilAttributeSet> AttributeSet;
+	
+	void InitAbilityActorInfo();
 };
 
