@@ -17,6 +17,9 @@
 #include "UI/HUD/VeilHUD.h"
 #include "GameFramework/PlayerController.h"
 
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+
 AVeilCharacter::AVeilCharacter()
 {
 	// ASC 및 AS 초기화
@@ -83,5 +86,39 @@ void AVeilCharacter::InitAbilityActorInfo()
 		{
 			VeilHUD->InitOverlay(VeilPlayerController, nullptr, AbilitySystemComponent, AttributeSet);
 		}
+	}
+}
+
+
+void AVeilCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// EnhancedInputComponent로 캐스팅하여 입력 바인딩
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		// MoveAction이 트리거될 때 Move 함수 호출
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AVeilCharacter::Move);
+	}
+}
+
+void AVeilCharacter::Move(const FInputActionValue& Value)
+{
+	// 2D 벡터(X, Y) 값을 가져옴
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// 카메라 혹은 컨트롤러가 바라보는 방향을 기준으로 전후좌우 방향 계산
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// 전진 방향(X)과 우측 방향(Y) 구하기
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// 물리 엔진에 움직임 입력 추가
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
 	}
 }

@@ -2,9 +2,13 @@
 
 #pragma once
 
+#include "InputActionValue.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "VeilCharacter.generated.h"
+
+
 
 class UAbilitySystemComponent;
 class UVeilAttributeSet;
@@ -18,6 +22,8 @@ public:
 	AVeilCharacter();
 
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 	
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
@@ -27,6 +33,12 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+protected:
+	void Move(const FInputActionValue& Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	class UInputAction* MoveAction;
+	
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
